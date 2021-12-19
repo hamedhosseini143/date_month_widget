@@ -26,9 +26,7 @@ class DateMonthWidget extends DateTimeWidgetBase {
    */
   public static function defaultSettings() {
     return [
-        'increment' => '15',
         'date_order' => 'YD',
-        'time_type' => '24',
       ] + parent::defaultSettings();
   }
 
@@ -43,18 +41,9 @@ class DateMonthWidget extends DateTimeWidgetBase {
 
     $date_order = $this->getSetting('date_order');
 
-    if ($this->getFieldSetting('datetime_type') == 'datetime') {
-      $time_type = $this->getSetting('time_type');
-      $increment = $this->getSetting('increment');
-    }
-    else {
-      $time_type = '';
-      $increment = '';
-    }
-
-    // Set up the date part order array.
     switch ($date_order) {
-      case 'YD':
+      default:
+      case 'YM':
         $date_part_order = ['year', 'month'];
         break;
 
@@ -66,8 +55,7 @@ class DateMonthWidget extends DateTimeWidgetBase {
 
     $element['value'] = [
         '#type' => 'datelist',
-        '#date_increment' => $increment,
-        '#date_part_order' => ['year', 'month'],
+        '#date_part_order' => $date_part_order,
       ] + $element['value'];
 
     return $element;
@@ -86,39 +74,6 @@ class DateMonthWidget extends DateTimeWidgetBase {
       '#options' => ['MY' => t('Month/Year'), 'YM' => t('Year/Month')],
     ];
 
-    if ($this->getFieldSetting('datetime_type') == 'datetime') {
-      $element['time_type'] = [
-        '#type' => 'select',
-        '#title' => t('Time type'),
-        '#default_value' => $this->getSetting('time_type'),
-        '#options' => ['24' => t('24 hour time'), '12' => t('12 hour time')],
-      ];
-
-      $element['increment'] = [
-        '#type' => 'select',
-        '#title' => t('Time increments'),
-        '#default_value' => $this->getSetting('increment'),
-        '#options' => [
-          1 => t('1 minute'),
-          5 => t('5 minute'),
-          10 => t('10 minute'),
-          15 => t('15 minute'),
-          30 => t('30 minute'),
-        ],
-      ];
-    }
-    else {
-      $element['time_type'] = [
-        '#type' => 'hidden',
-        '#value' => 'none',
-      ];
-
-      $element['increment'] = [
-        '#type' => 'hidden',
-        '#value' => $this->getSetting('increment'),
-      ];
-    }
-
     return $element;
   }
 
@@ -129,10 +84,6 @@ class DateMonthWidget extends DateTimeWidgetBase {
     $summary = [];
 
     $summary[] = t('Date part order: @order', ['@order' => $this->getSetting('date_order')]);
-    if ($this->getFieldSetting('datetime_type') == 'datetime') {
-      $summary[] = t('Time type: @time_type', ['@time_type' => $this->getSetting('time_type')]);
-      $summary[] = t('Time increments: @increment', ['@increment' => $this->getSetting('increment')]);
-    }
 
     return $summary;
   }
